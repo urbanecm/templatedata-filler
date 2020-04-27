@@ -47,6 +47,15 @@ class Template():
         self.mText = self.mw.get_content(self.page_title)
         return self.mText
     
+
+    @property
+    def params_done(self):
+        return len(self.get_td_params())
+    
+    @property
+    def params_all(self):
+        return len(self.get_all_params())
+    
     def get_templatedata_storage(self):
         if self.mTemplatedataStorage:
             return self.mTemplatedataStorage

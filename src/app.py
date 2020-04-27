@@ -99,7 +99,18 @@ def index():
         tmpl.patch_templatedata_params(new_params)
         flash('TemplateData were updated')
 
-    return render_template('tool.html', params=params)
+    return render_template('tool.html', params=params, wiki=request.args.get('wiki'), template=request.args.get('template'))
+
+@app.route('/api/<path:wiki>/<path:template>.json')
+def api_template(wiki, template):
+    tmpl = Template(template, MediaWiki(wiki, mwoauth))
+    return jsonify({
+        "wiki": wiki,
+        "template": template,
+        "params_done": tmpl.params_done,
+        "params_all": tmpl.params_all
+    })
+
 
 @app.route('/test.json')
 def test():

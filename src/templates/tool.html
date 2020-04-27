@@ -5,52 +5,64 @@
 
     <form method="post">
         <div class="row">
+            <div class="col-sm-10">
+                <div class="param-areas">
+                    {% for param in params %}
+                        <div class="param-area" data-param="{{param}}">
+                            <h3 class="text-center">{{param}}</h3>
+                            <div class="form-group">
+                                <label for="{{param}}-label">Label</label>
+                                <input class="form-control" type="text" name="{{param}}-label" id="{{param}}-label">
+                            </div>
+                            <div class="form-group">
+                                <label for="{{param}}-description">Description</label>
+                                <input class="form-control" type="text" name="{{param}}-description" id="{{param}}-description">
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="{{param}}-required" id="{{param}}-required">
+                                <label class="form-check-label" for="{{param}}-required">Required?</label>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
             <div class="col-sm-2">
-                {% for param in params %}
-                    <div class="param">
-                        <button class="form-control btn btn-secondary param-control" data-param="{{param}}" type="button">{{ param }}</button>
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="col-sm-10 param-areas">
-                {% for param in params %}
-                    <div class="param-area" data-param="{{param}}">
-                        <h3 class="text-center">{{param}}</h3>
-                        <div class="form-group">
-                            <label for="{{param}}-label">Label</label>
-                            <input class="form-control" type="text" name="{{param}}-label" id="{{param}}-label">
-                        </div>
-                        <div class="form-group">
-                            <label for="{{param}}-description">Description</label>
-                            <input class="form-control" type="text" name="{{param}}-description" id="{{param}}-description">
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="{{param}}-required" id="{{param}}-required">
-                            <label class="form-check-label" for="{{param}}-required">Required?</label>
-                        </div>
-                    </div>
-                {% endfor %}
+                <div id="scoring-dashboard" class="col-sm-4 mx-auto" style="font-size: 2em;">
+                    <span id="params-done">0</span>/<span id="params-all">0</span>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <button class="form-control btn btn-primary" type="submit">Save</button>
-        </div>
+        <button id="next-param" class="form-control btn btn-primary" type="button">Next param</button>
+        <button class="form-control btn btn-secondary" type="submit">Save all</button>
     </form>
 </div>
 
 <script>
-    document.querySelectorAll('.param-control').forEach((el) => {
-        el.addEventListener('click', (e) => {
-            document.querySelectorAll('.param-area').forEach((el) => {
-                el.classList.add('d-none');
-            });
-            document.querySelectorAll('.param-control').forEach((el) => {
-                el.classList.remove('active');
-            })
-            e.srcElement.classList.add('active');
-            document.querySelector(`.param-area[data-param="${e.srcElement.getAttribute('data-param')}"]`).classList.remove('d-none');
+    // Scoring dashboard
+    function refreshDashboard() {
+        document.querySelector('#scoring-dashboard').classList.remove('d-none');
+        fetch("{{url_for('api_template', wiki=wiki, template=template)}}").then((response) => {
+            return response.json();
+        }).then((data) => {
+            document.querySelector('#params-done').innerText = data.params_done;
+            document.querySelector('#params-all').innerText = data.params_all;
         });
+    }
+
+    // Step management
+    let i = -1;
+
+    function nextParam() {
+        i++;
+        document.querySelectorAll('.param-area').forEach((el) => {
+            el.classList.add('d-none');
+        });
+        document.querySelectorAll('.param-area')[i].classList.remove('d-none');
+    }
+    nextParam();
+
+    document.querySelector('#next-param').addEventListener('click', (el) => {
+        nextParam();
     });
-    document.querySelectorAll('.param-control')[0].click();
 </script>
 {% endblock %}
