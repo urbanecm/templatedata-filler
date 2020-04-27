@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h1>{{ _('fill-templatedata') }}</h1>
+
+    <form method="get">
+        <label for="template">Template</label>
+        <input class="form-control" type="text" name="template" id="template">
+
+        <label for="wiki">Wiki</label>
+        <input class="form-control" type="text" name="wiki" id="wiki">
+
+        <button class="form-control btn btn-primary" type="submit">Submit</button>
+    </form>
+</div>
+{% endblock %}
